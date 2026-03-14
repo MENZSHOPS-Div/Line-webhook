@@ -1,5 +1,4 @@
 const express = require("express")
-const fetch = require("node-fetch")
 
 const app = express()
 
@@ -11,10 +10,10 @@ app.post("/webhook", async (req,res)=>{
 
     const event = req.body.events[0]
 
-    if(event.type === "message"){
+    if(event && event.type === "message"){
 
         const replyToken = event.replyToken
-        const userText = event.message.text
+        const text = event.message.text
 
         await fetch("https://api.line.me/v2/bot/message/reply",{
             method:"POST",
@@ -24,19 +23,13 @@ app.post("/webhook", async (req,res)=>{
             },
             body:JSON.stringify({
                 replyToken:replyToken,
-                messages:[
-                    {
-                        type:"text",
-                        text:"คุณพิมพ์ว่า: " + userText
-                    }
-                ]
+                messages:[{type:"text",text:"คุณพิมพ์ว่า: "+text}]
             })
         })
 
     }
 
     res.status(200).send("OK")
-
 })
 
 const PORT = process.env.PORT || 3000
